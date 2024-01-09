@@ -21,10 +21,10 @@ export default (migrationManager: MigrationManager) => {
         ? stringNodeToSTring(decoratorArgs[0])
         : vuexMutation.getName();
       const mutationOptions = decoratorArgs[1]?.asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
-      const namespace = mutationOptions?.getProperty('namespace')
-        ?.asKindOrThrow(SyntaxKind.PropertyAssignment)
-        .getInitializerIfKindOrThrow(SyntaxKind.StringLiteral)
-        .getLiteralText();
+      const namespaceProp = mutationOptions?.getProperty('namespace');
+
+      const namespace = namespaceProp?.isKind(SyntaxKind.PropertyAssignment)
+        ? namespaceProp.getInitializer()?.getText() : namespaceProp?.getText();
 
       mutationOptions?.getProperties().forEach((prop) => {
         if (
@@ -35,7 +35,7 @@ export default (migrationManager: MigrationManager) => {
       });
 
       const mutationName = (
-        namespace ? [namespace, methodName].join('/') : methodName
+        namespace ? [namespace, methodName].join('+"/"+') : methodName
       );
 
       // The property type is a function or any.

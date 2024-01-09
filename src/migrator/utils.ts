@@ -62,5 +62,10 @@ export const stringNodeToSTring = (node: Node): string => {
   ) {
     return node.getLiteralText();
   }
+
+  if (node.isKind(SyntaxKind.PropertyAccessExpression)) {
+    return node.getText();
+  }
+
   throw new Error(`Node is not a string: ${node.getKindName()}`);
 };

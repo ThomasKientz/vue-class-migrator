@@ -21,10 +21,10 @@ export default (migrationManager: MigrationManager) => {
         ? stringNodeToSTring(decoratorArgs[0])
         : vuexAction.getName();
       const actionOptions = decoratorArgs[1]?.asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
-      const namespace = actionOptions?.getProperty('namespace')
-        ?.asKindOrThrow(SyntaxKind.PropertyAssignment)
-        .getInitializerIfKindOrThrow(SyntaxKind.StringLiteral)
-        .getLiteralText();
+      const namespaceProp = actionOptions?.getProperty('namespace');
+
+      const namespace = namespaceProp?.isKind(SyntaxKind.PropertyAssignment)
+        ? namespaceProp.getInitializer()?.getText() : namespaceProp?.getText();
 
       actionOptions?.getProperties().forEach((prop) => {
         if (
@@ -35,7 +35,7 @@ export default (migrationManager: MigrationManager) => {
       });
 
       const actionName = (
-        namespace ? [namespace, methodName].join('/') : methodName
+        namespace ? [namespace, methodName].join(' + "/" + ') : methodName
       );
 
       // The property type is a function or any.
@@ -45,6 +45,7 @@ export default (migrationManager: MigrationManager) => {
       let params: ParameterDeclarationStructure[] | undefined;
       let returnType = undefined as string | undefined;
       let paramVars: string[] = [];
+
       if (callSignature) {
         // The function has paramenters
         const paramsString = callSignature.compilerSignature
@@ -60,12 +61,12 @@ export default (migrationManager: MigrationManager) => {
           },
         ];
         paramVars = callSignature.getParameters().map((param) => param.getName());
-        returnType = `Promise<${callSignature.getReturnType().getText() ?? 'any'}>`; // Dispatch always returns a promise
+        returnType = `${callSignature.getReturnType().getText() ?? 'any'}`; // Dispatch always returns a promise
       } else {
         returnType = vuexAction.getTypeNode()?.getText(); // Probably is set to any
       }
 
-      const dispatchParameters = [`"${actionName}"`, ...paramVars].join(', ');
+      const dispatchParameters = [`${actionName}`, ...paramVars].join(', ');
 
       methodsObject.addMethod({
         name: vuexAction.getName(),

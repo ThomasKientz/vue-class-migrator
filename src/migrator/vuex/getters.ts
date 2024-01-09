@@ -14,11 +14,12 @@ export default (migrationManager: MigrationManager) => {
       const getterMethodName = decoratorArgs[0]
         ? stringNodeToSTring(decoratorArgs[0])
         : vuexGetter.getName();
+
       const getterOptions = decoratorArgs[1]?.asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
-      const namespace = getterOptions?.getProperty('namespace')
-        ?.asKindOrThrow(SyntaxKind.PropertyAssignment)
-        .getInitializerIfKindOrThrow(SyntaxKind.StringLiteral)
-        .getLiteralText();
+      const namespaceProp = getterOptions?.getProperty('namespace');
+
+      const namespace = namespaceProp?.isKind(SyntaxKind.PropertyAssignment)
+        ? namespaceProp.getInitializer()?.getText() : namespaceProp?.getText();
 
       getterOptions?.getProperties().forEach((prop) => {
         if (
@@ -31,12 +32,12 @@ export default (migrationManager: MigrationManager) => {
 
       const propertyType = vuexGetter.getTypeNode()?.getText();
       const getterName = (
-        namespace ? [namespace, getterMethodName].join('/') : getterMethodName
+        namespace ? [namespace, getterMethodName].join('+"/"+') : getterMethodName
       );
       migrationManager.addComputedProp({
         name: vuexGetter.getName(),
         returnType: propertyType,
-        statements: `return this.$store.getters["${getterName}"];`,
+        statements: `return this.$store.getters[${getterName}];`,
       });
     });
   }
