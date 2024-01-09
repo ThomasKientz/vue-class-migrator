@@ -35,7 +35,7 @@ export default (migrationManager: MigrationManager) => {
       });
 
       const mutationName = (
-        namespace ? [namespace, methodName].join('+"/"+') : methodName
+        namespace ? [namespace, methodName].join(' + "/" + ') : methodName
       );
 
       // The property type is a function or any.
@@ -60,12 +60,12 @@ export default (migrationManager: MigrationManager) => {
           },
         ];
         paramVars = callSignature.getParameters().map((param) => param.getName());
-        returnType = `Promise<${callSignature.getReturnType().getText() ?? 'any'}>`; // Dispatch always returns a promise
+        returnType = `${callSignature.getReturnType().getText() ?? 'any'}`; // Dispatch always returns a promise
       } else {
         returnType = vuexMutation.getTypeNode()?.getText(); // Probably is set to any
       }
 
-      const dispatchParameters = [`"${mutationName}"`, ...paramVars].join(', ');
+      const dispatchParameters = [`${mutationName}`, ...paramVars].join(', ');
 
       methodsObject.addMethod({
         name: vuexMutation.getName(),
