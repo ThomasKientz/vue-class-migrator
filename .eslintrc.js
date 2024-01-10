@@ -2,6 +2,7 @@ module.exports = {
   ignorePatterns: [
     '**/dist',
     '**/node_modules',
+    '**/test',
   ],
   parserOptions: {
     project: "./tsconfig.base.json"
