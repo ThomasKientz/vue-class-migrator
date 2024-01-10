@@ -81,6 +81,9 @@ export default class MigrationManager {
       propName, propNode, tsType,
     } = options;
 
+    const propNameWithComments = `${options.comments?.join('\n') ?? ''}
+    ${propName}`;
+
     let propObject: ObjectLiteralExpression;
     if (!propNode) {
       propObject = addPropertyObject(propsObject, propName);
@@ -101,7 +104,7 @@ export default class MigrationManager {
       propNode.isKind(SyntaxKind.Identifier) // e.g. String
       || propNode.isKind(SyntaxKind.ArrayLiteralExpression) // e.g. [String, Boolean]
     ) {
-      propObject = addPropertyObject(propsObject, propName);
+      propObject = addPropertyObject(propsObject, propNameWithComments);
       propObject
         .addPropertyAssignment({
           name: 'type',
@@ -115,7 +118,7 @@ export default class MigrationManager {
       return propObject;
     }
     if (propNode.isKind(SyntaxKind.ObjectLiteralExpression)) {
-      propObject = addPropertyObject(propsObject, propName, propNode.getText());
+      propObject = addPropertyObject(propsObject, propNameWithComments, propNode.getText());
       if (!propObject.getProperty('type')) {
         propObject
           .addPropertyAssignment({
@@ -221,7 +224,8 @@ export default class MigrationManager {
     comments?: string[];
   }) {
     const watchMainObject = getObjectProperty(this.mainObject, 'watch');
-    const watchPropArray = getArrayProperty(watchMainObject, `"${options.watchPath}"`);
+    const watchPropArray = getArrayProperty(watchMainObject, `${options.comments?.join('\n') ?? ''}
+    "${options.watchPath}"`);
     const newWatcher = watchPropArray
       .addElement(options.watchOptions ?? '{}')
       .asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
