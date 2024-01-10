@@ -15,6 +15,7 @@ export default (migrationManager: MigrationManager) => {
       propName: prop.getName(),
       propNode: propOptions,
       tsType: propTsType,
+      comments: prop.getLeadingCommentRanges().map((comment) => comment.getText()),
     });
   });
 };

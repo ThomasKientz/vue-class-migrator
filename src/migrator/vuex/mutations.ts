@@ -38,6 +38,8 @@ export default (migrationManager: MigrationManager) => {
         namespace ? [namespace, methodName].join(' + "/" + ') : methodName
       );
 
+      const docs = vuexMutation.getLeadingCommentRanges().map((comment) => comment.getText());
+
       // The property type is a function or any.
       // The function params are the params that the method should take
 
@@ -72,6 +74,11 @@ export default (migrationManager: MigrationManager) => {
         parameters: params,
         returnType,
         statements: `return this.$store.commit(${dispatchParameters});`,
+        leadingTrivia: (writer) => {
+          docs.forEach((doc) => {
+            writer.writeLine(doc);
+          });
+        },
       });
     });
   }

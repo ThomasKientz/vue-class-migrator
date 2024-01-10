@@ -15,6 +15,8 @@ export default (migrationManager: MigrationManager) => {
         ? stringNodeToSTring(decoratorArgs[0])
         : vuexGetter.getName();
 
+      const docs = vuexGetter.getLeadingCommentRanges().map((comment) => comment.getText());
+
       const getterOptions = decoratorArgs[1]?.asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
       const namespaceProp = getterOptions?.getProperty('namespace');
 
@@ -38,6 +40,7 @@ export default (migrationManager: MigrationManager) => {
         name: vuexGetter.getName(),
         returnType: propertyType,
         statements: `return this.$store.getters[${getterName}];`,
+        comments: docs,
       });
     });
   }

@@ -14,12 +14,14 @@ export default (migrationManager: MigrationManager) => {
           returnType: getter.getReturnTypeNode()?.getText(),
           statements: getter.getBodyText(),
         },
+        comments: getter.getLeadingCommentRanges().map((comment) => comment.getText()),
       });
     } else {
       migrationManager.addComputedProp({
         name: getterName,
         returnType: getter.getReturnTypeNode()?.getText(),
         statements: getter.getBodyText(),
+        comments: getter.getLeadingCommentRanges().map((comment) => comment.getText()),
       });
     }
   });

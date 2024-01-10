@@ -24,6 +24,7 @@ export default (migrationManager: MigrationManager) => {
         watchPath,
         watchOptions,
         handlerMethod: watcherName,
+        comments: watcher.getLeadingCommentRanges().map((comment) => comment.getText()),
       });
     });
 

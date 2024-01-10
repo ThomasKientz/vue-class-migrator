@@ -28,6 +28,7 @@ export default (clazz: ClassDeclaration, mainObject: ObjectLiteralExpression) =>
             parameters: setter.getParameters().map((p) => p.getStructure()),
             returnType: setter.getReturnTypeNode()?.getText(),
             statements: setter.getBodyText(),
+            leadingTrivia: setter.getLeadingCommentRanges().map((comment) => comment.getText()),
           });
         }
       } else {
@@ -38,6 +39,7 @@ export default (clazz: ClassDeclaration, mainObject: ObjectLiteralExpression) =>
           .addPropertyAssignment({
             name: setter.getName(),
             initializer: '{}',
+            leadingTrivia: setter.getLeadingCommentRanges().map((comment) => comment.getText()),
           })
           .getFirstDescendantByKindOrThrow(SyntaxKind.ObjectLiteralExpression);
 

@@ -107,22 +107,24 @@ export default (clazz: ClassDeclaration, mainObject: ObjectLiteralExpression) =>
     classPropertyData.forEach((propertyData) => {
       const typeNode = propertyData.getTypeNode()?.getText();
       if (typeNode) {
-        // dataMethod.insertVariableStatement(0, {
-        //   declarationKind: VariableDeclarationKind.Const,
-        //   declarations: [{
-        //     name: propertyData.getName(),
-        //     type: typeNode,
-        //     initializer: propertyData.getInitializer()?.getText() ?? 'undefined',
-        //   }],
-        // });
         returnObject.addPropertyAssignment({
           name: propertyData.getName(),
           initializer: `${propertyData.getInitializer()?.getText()} as ${typeNode}` ?? 'undefined',
+          leadingTrivia: (writer) => {
+            propertyData.getLeadingCommentRanges().forEach((comment) => {
+              writer.writeLine(comment.getText());
+            });
+          },
         });
       } else {
         returnObject.addPropertyAssignment({
           name: propertyData.getName(),
           initializer: propertyData.getInitializer()?.getText() ?? 'undefined',
+          leadingTrivia: (writer) => {
+            propertyData.getLeadingCommentRanges().forEach((comment) => {
+              writer.writeLine(comment.getText());
+            });
+          },
         });
       }
     });

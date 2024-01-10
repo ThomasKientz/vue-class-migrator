@@ -41,6 +41,7 @@ export default class MigrationManager {
   addModel(options: {
     propName: string,
     eventName: string,
+    comments?: string[];
   }) {
     if (this.mainObject.getProperty('model')) {
       throw new Error('The component has two models.');
@@ -50,12 +51,22 @@ export default class MigrationManager {
       .addPropertyAssignment({
         name: 'prop',
         initializer: `"${options.propName}"`,
+        leadingTrivia: (writer) => {
+          options.comments?.forEach((comment) => {
+            writer.writeLine(`${comment}`);
+          });
+        },
       });
 
     modelObject
       .addPropertyAssignment({
         name: 'event',
         initializer: `"${options.eventName}"`,
+        leadingTrivia: (writer) => {
+          options.comments?.forEach((comment) => {
+            writer.writeLine(`${comment}`);
+          });
+        },
       });
   }
 
@@ -63,6 +74,7 @@ export default class MigrationManager {
     propName: string;
     propNode: Node | undefined;
     tsType: TypeNode | undefined;
+    comments?: string[];
   }): ObjectLiteralExpression {
     const propsObject = getObjectProperty(this.mainObject, 'props');
     const {
@@ -76,6 +88,11 @@ export default class MigrationManager {
         .addPropertyAssignment({
           name: 'type',
           initializer: this.typeNodeToString(tsType),
+          leadingTrivia: (writer) => {
+            options.comments?.forEach((comment) => {
+              writer.writeLine(`${comment}`);
+            });
+          },
         });
       return propObject;
     }
@@ -89,6 +106,11 @@ export default class MigrationManager {
         .addPropertyAssignment({
           name: 'type',
           initializer: propNode.getText(),
+          leadingTrivia: (writer) => {
+            options.comments?.forEach((comment) => {
+              writer.writeLine(`${comment}`);
+            });
+          },
         });
       return propObject;
     }
@@ -99,6 +121,11 @@ export default class MigrationManager {
           .addPropertyAssignment({
             name: 'type',
             initializer: this.typeNodeToString(tsType),
+            leadingTrivia: (writer) => {
+              options.comments?.forEach((comment) => {
+                writer.writeLine(`${comment}`);
+              });
+            },
           });
       }
       return propObject;
@@ -116,6 +143,11 @@ export default class MigrationManager {
         syncPropObject.addPropertyAssignment({
           name: 'cache',
           initializer: `${options.cache}`,
+          leadingTrivia: (writer) => {
+            options.comments?.forEach((comment) => {
+              writer.writeLine(`${comment}`);
+            });
+          },
         });
       }
 
@@ -123,12 +155,22 @@ export default class MigrationManager {
         name: 'get',
         statements: options.get.statements,
         returnType: options.get.returnType,
+        leadingTrivia: (writer) => {
+          options.comments?.forEach((comment) => {
+            writer.writeLine(`${comment}`);
+          });
+        },
       });
       if (options.set) {
         syncPropObject.addMethod({
           name: 'set',
           parameters: options.set.parameters,
           statements: options.set.statements,
+          leadingTrivia: (writer) => {
+            options.comments?.forEach((comment) => {
+              writer.writeLine(`${comment}`);
+            });
+          },
         });
       }
     } else {
@@ -136,6 +178,11 @@ export default class MigrationManager {
         name: options.name,
         returnType: options.returnType,
         statements: options.statements,
+        leadingTrivia: (writer) => {
+          options.comments?.forEach((comment) => {
+            writer.writeLine(`${comment}`);
+          });
+        },
       });
     }
   }
@@ -146,6 +193,7 @@ export default class MigrationManager {
     statements: string;
     isAsync?: boolean;
     returnType?: string;
+    comments?: string[];
   }) {
     const methodsMainObject = getObjectProperty(this.mainObject, 'methods');
 
@@ -158,6 +206,11 @@ export default class MigrationManager {
       isAsync: options.isAsync,
       returnType: options.returnType,
       statements: options.statements,
+      leadingTrivia: (writer) => {
+        options.comments?.forEach((comment) => {
+          writer.writeLine(`${comment}`);
+        });
+      },
     });
   }
 
@@ -165,15 +218,22 @@ export default class MigrationManager {
     watchPath: string;
     watchOptions: string | undefined;
     handlerMethod: string;
+    comments?: string[];
   }) {
     const watchMainObject = getObjectProperty(this.mainObject, 'watch');
     const watchPropArray = getArrayProperty(watchMainObject, `"${options.watchPath}"`);
     const newWatcher = watchPropArray
       .addElement(options.watchOptions ?? '{}')
       .asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
+
     newWatcher.addPropertyAssignment({
       name: 'handler',
       initializer: `"${options.handlerMethod}"`,
+      // leadingTrivia: (writer) => {
+      //   options.comments?.forEach((comment) => {
+      //     writer.writeLine(`${comment}`);
+      //   });
+      // },
     });
   }
 
