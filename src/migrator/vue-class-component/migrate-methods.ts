@@ -13,9 +13,11 @@ export default (clazz: ClassDeclaration, mainObject: ObjectLiteralExpression) =>
         });
       });
       const method = clazz.getMethodOrThrow(m);
+
       const typeNode = method.getReturnTypeNode()?.getText();
       mainObject.addMethod({
         name: method.getName(),
+        isGenerator: true,
         isAsync: method.isAsync(),
         returnType: typeNode,
         statements: method.getBodyText(),
@@ -40,8 +42,11 @@ export default (clazz: ClassDeclaration, mainObject: ObjectLiteralExpression) =>
       }
 
       const typeNode = method.getReturnTypeNode()?.getText();
+
+      console.log('isGenerator', method.isGenerator(), method.getName());
+
       methodsObject.addMethod({
-        name: method.getName(),
+        name: (method.isGenerator() ? '*' : '') + method.getName(),
         parameters: method.getParameters().map((p) => p.getStructure()),
         isAsync: method.isAsync(),
         returnType: typeNode,

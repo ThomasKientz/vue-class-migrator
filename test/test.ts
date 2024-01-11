@@ -222,18 +222,19 @@ export default class DistributionConfigurationForm extends Vue {
     this.internalConfiguration = { ...this.defaultConfiguration };
   }
 
-  onDeclareSimpleProductsChanged() {
-    this.internalConfiguration.SimpleProductsMigrationStrategy = null;
-    this.updateMigrationStrategies();
-  }
-
-  onDeclareCompleteProductsChanged() {
-    this.internalConfiguration.CompleteProductsMigrationStrategy = null;
-    this.updateMigrationStrategies();
-  }
-
-  onDeclareProductCategoriesChanged() {
-    this.updateMigrationStrategies();
+  /**
+   * Fournit les actions disponibles pour un fichier/document donné
+   * @param file - Un document lié à une activité élevage
+   * @returns un générateur de FileAction
+   */
+  *getFileActionsGenerator(file: FileItem): Generator<FileAction> {
+    if (isAnimalBreedingFileItem(file)) {
+      //file exists
+      yield {
+        label: this.$t('common.download'),
+        disabled: !file.IsIndexed,
+      };
+    }
   }
 
   /** Met à jour les stratégies de migration en fonction des choix */
