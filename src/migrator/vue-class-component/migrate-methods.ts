@@ -6,6 +6,12 @@ export default (clazz: ClassDeclaration, mainObject: ObjectLiteralExpression) =>
   vueSpecialMethods
     .filter((m) => clazz.getMethod(m))
     .forEach((m) => {
+      clazz.getConstructors().forEach((c) => {
+        mainObject.addMethod({
+          name: 'constructor',
+          statements: c.getBodyText(),
+        });
+      });
       const method = clazz.getMethodOrThrow(m);
       const typeNode = method.getReturnTypeNode()?.getText();
       mainObject.addMethod({
