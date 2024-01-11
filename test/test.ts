@@ -25,6 +25,10 @@ import { Validation } from '@/types/front/validationRule';
  */
 @Component({ components: { FormActionFooter, FormValidationError, FormSection, PageHeader, ValidDialog, Information } })
 export default class DistributionConfigurationForm extends Vue {
+  /** Le produit à afficher */
+  @Prop({ required: true })
+  readonly product!: CropFarmingProductLite;
+
   @Action(DistributionAction.fetchConfiguration, { namespace: DistributionModule.namespace })
   fetchConfiguration!: (clientActivityId: string) => Promise<DistributionConfiguration>;
 

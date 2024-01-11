@@ -109,14 +109,10 @@ export default class MigrationManager {
         .addPropertyAssignment({
           name: 'type',
           initializer: propNode.getText(),
-          leadingTrivia: (writer) => {
-            options.comments?.forEach((comment) => {
-              writer.writeLine(`${comment}`);
-            });
-          },
         });
       return propObject;
     }
+
     if (propNode.isKind(SyntaxKind.ObjectLiteralExpression)) {
       propObject = addPropertyObject(propsObject, propNameWithComments, propNode.getText());
       if (!propObject.getProperty('type')) {
@@ -124,11 +120,6 @@ export default class MigrationManager {
           .addPropertyAssignment({
             name: 'type',
             initializer: this.typeNodeToString(tsType),
-            leadingTrivia: (writer) => {
-              options.comments?.forEach((comment) => {
-                writer.writeLine(`${comment}`);
-              });
-            },
           });
       }
       return propObject;
