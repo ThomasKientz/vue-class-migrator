@@ -13,7 +13,7 @@ export default (clazz: ClassDeclaration, mainObject: ObjectLiteralExpression) =>
         isAsync: method.isAsync(),
         returnType: typeNode,
         statements: method.getBodyText(),
-        leadingTrivia: method.getLeadingCommentRanges().map((comment) => comment.getText()),
+        leadingTrivia: method.getLeadingCommentRanges().map((comment) => `${comment.getText()}\n`),
       });
     });
 
@@ -40,7 +40,7 @@ export default (clazz: ClassDeclaration, mainObject: ObjectLiteralExpression) =>
         isAsync: method.isAsync(),
         returnType: typeNode,
         statements: method.getBodyText(),
-        leadingTrivia: method.getLeadingCommentRanges().map((comment) => comment.getText()),
+        leadingTrivia: method.getLeadingCommentRanges().map((comment) => `${comment.getText()}\n`),
       });
     });
   }
