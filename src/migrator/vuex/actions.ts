@@ -63,6 +63,13 @@ export default (migrationManager: MigrationManager) => {
           },
         ];
         paramVars = callSignature.getParameters().map((param) => param.getName());
+
+        if (paramVars[0] === '__0') {
+          const [, types] = params[0].name.split('}:');
+          params[0].name = `p : ${types}`;
+          paramVars[0] = 'p';
+        }
+
         returnType = `${callSignature.getReturnType().getText() ?? 'any'}`; // Dispatch always returns a promise
       } else {
         returnType = vuexAction.getTypeNode()?.getText(); // Probably is set to any
